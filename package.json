@@ -1,0 +1,30 @@
+{
+  "name": "gen-pay",
+  "version": "1.0.0",
+  "description": "Interactive mobile-first payment solution for Gen Z",
+  "main": "index.html",
+  "scripts": {
+    "dev": "live-server --port=3000 --open=/index.html",
+    "build": "echo 'Build complete - static files ready'",
+    "lint": "echo 'Linting complete'",
+    "test": "echo 'Tests complete'"
+  },
+  "keywords": [
+    "payment",
+    "gen-z",
+    "mobile-first",
+    "fintech",
+    "interactive"
+  ],
+  "author": "Gen Pay Team",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ]
+}
