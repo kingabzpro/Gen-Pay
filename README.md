@@ -66,7 +66,7 @@ The website is built mobile-first and adapts to:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/Gen-Pay.git
+   git clone https://github.com/kingabzpro/Gen-Pay.git
    cd Gen-Pay
    ```
 
