@@ -2,8 +2,24 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+### Quick Start (with diagnostics)
 
+```bash
+npm run start-dev
+```
+
+This will check for common configuration issues before starting the server.
+
+### Manual Setup
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Configure environment variables (see LOCAL_SETUP_GUIDE.md)
+
+3. Run the development server:
 ```bash
 npm run dev
 # or
@@ -14,7 +30,14 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+### Diagnostics
+
+To check for common configuration issues:
+```bash
+npm run diagnose
+```
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "diagnose": "node diagnose.js",
+    "start-dev": "node start-dev.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
