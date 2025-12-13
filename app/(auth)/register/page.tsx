@@ -53,30 +53,30 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-black px-4 py-8">
       <div className="w-full max-w-md">
         <div className="flex justify-center mb-8">
           <Link href="/" className="flex items-center space-x-2">
-            <DollarSign className="h-10 w-10 text-blue-600" />
-            <span className="text-3xl font-bold">GEN-PAY</span>
+            <DollarSign className="h-10 w-10 text-green-500" />
+            <span className="text-3xl font-bold text-green-500">GEN-PAY</span>
           </Link>
         </div>
 
-        <Card>
+        <Card className="bg-gray-900 border border-gray-800">
           <CardHeader>
-            <CardTitle>Create Merchant Account</CardTitle>
-            <CardDescription>Start accepting USDT payments today</CardDescription>
+            <CardTitle className="text-white">Create Merchant Account</CardTitle>
+            <CardDescription className="text-gray-400">Start accepting USDT payments today</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm">
+                <div className="p-3 bg-red-900 border border-red-800 text-red-300 rounded-md text-sm">
                   {error}
                 </div>
               )}
 
               <div className="space-y-2">
-                <label htmlFor="businessName" className="text-sm font-medium">
+                <label htmlFor="businessName" className="text-sm font-medium text-gray-300">
                   Business Name
                 </label>
                 <Input
@@ -86,11 +86,12 @@ export default function RegisterPage() {
                   onChange={(e) => setBusinessName(e.target.value)}
                   placeholder="Acme Inc."
                   required
+                  className="bg-gray-800 border border-gray-700 text-white placeholder-gray-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium">
+                <label htmlFor="email" className="text-sm font-medium text-gray-300">
                   Email
                 </label>
                 <Input
@@ -100,11 +101,12 @@ export default function RegisterPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   required
+                  className="bg-gray-800 border border-gray-700 text-white placeholder-gray-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium">
+                <label htmlFor="password" className="text-sm font-medium text-gray-300">
                   Password
                 </label>
                 <Input
@@ -114,11 +116,12 @@ export default function RegisterPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
+                  className="bg-gray-800 border border-gray-700 text-white placeholder-gray-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="confirmPassword" className="text-sm font-medium">
+                <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-300">
                   Confirm Password
                 </label>
                 <Input
@@ -128,17 +131,18 @@ export default function RegisterPage() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
                   required
+                  className="bg-gray-800 border border-gray-700 text-white placeholder-gray-500"
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full bg-green-500 hover:bg-green-600 text-black" disabled={loading}>
                 {loading ? "Creating account..." : "Create Account"}
               </Button>
             </form>
 
             <div className="mt-4 text-center text-sm">
-              <span className="text-gray-600">Already have an account? </span>
-              <Link href="/login" className="text-blue-600 hover:underline">
+              <span className="text-gray-500">Already have an account? </span>
+              <Link href="/login" className="text-green-500 hover:underline">
                 Sign in
               </Link>
             </div>
