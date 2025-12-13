@@ -5,7 +5,7 @@ import { ArrowRight, Shield, Zap, Globe, DollarSign } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-black">
       <header className="border-b border-gray-800">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -13,35 +13,35 @@ export default function Home() {
             <span className="text-2xl font-bold text-green-500">GEN-PAY</span>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="#features" className="text-gray-800 hover:text-green-500">
+            <Link href="#features" className="text-gray-300 hover:text-green-500">
               Features
             </Link>
-            <Link href="#pricing" className="text-gray-800 hover:text-green-500">
+            <Link href="#pricing" className="text-gray-300 hover:text-green-500">
               Pricing
             </Link>
-            <Link href="/login" className="text-gray-800 hover:text-green-500">
+            <Link href="/login" className="text-gray-300 hover:text-green-500">
               Login
             </Link>
             <Link href="/register">
-              <Button className="bg-green-500 hover:bg-green-600 text-white">Get Started</Button>
+              <Button className="bg-green-500 hover:bg-green-600 text-black">Get Started</Button>
             </Link>
           </nav>
         </div>
       </header>
 
       <main className="flex-1">
-        <section className="py-20 px-4 bg-gradient-to-b from-green-50 to-gray-900">
+        <section className="py-20 px-4 bg-gradient-to-b from-gray-900 to-black">
           <div className="container mx-auto max-w-4xl text-center">
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6">
               Accept <span className="text-green-500">USDT Payments</span> Instantly
             </h1>
-            <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
               The easiest way to accept stablecoin payments with USDT on Tron blockchain.
               Fast, secure, and built for the future of finance.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/register">
-                <Button size="lg" className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white">
+                <Button size="lg" className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-black">
                   Start Free Today <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -64,7 +64,7 @@ export default function Home() {
                 <CardHeader>
                   <Zap className="h-12 w-12 text-green-500 mb-4" />
                   <CardTitle className="text-green-500">Instant Settlement</CardTitle>
-                  <CardDescription className="text-gray-300">
+                  <CardDescription className="text-gray-400">
                     Receive payments in seconds with USDT on Tron network. No waiting, no delays.
                   </CardDescription>
                 </CardHeader>
@@ -74,7 +74,7 @@ export default function Home() {
                 <CardHeader>
                   <Shield className="h-12 w-12 text-green-500 mb-4" />
                   <CardTitle className="text-green-500">Secure & Reliable</CardTitle>
-                  <CardDescription className="text-gray-300">
+                  <CardDescription className="text-gray-400">
                     Built on blockchain technology with enterprise-grade security and transparency.
                   </CardDescription>
                 </CardHeader>
@@ -84,7 +84,7 @@ export default function Home() {
                 <CardHeader>
                   <Globe className="h-12 w-12 text-green-500 mb-4" />
                   <CardTitle className="text-green-500">Global Payments</CardTitle>
-                  <CardDescription className="text-gray-300">
+                  <CardDescription className="text-gray-400">
                     Accept payments from anywhere in the world. No geographic restrictions.
                   </CardDescription>
                 </CardHeader>
@@ -93,15 +93,15 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="pricing" className="py-20 px-4 bg-gray-800">
+        <section id="pricing" className="py-20 px-4 bg-gray-900">
           <div className="container mx-auto max-w-4xl">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
               Simple, Transparent Pricing
             </h2>
-            <Card className="max-w-md mx-auto bg-gray-700 border border-gray-600">
+            <Card className="max-w-md mx-auto bg-gray-800 border border-gray-700">
               <CardHeader>
                 <CardTitle className="text-4xl text-green-500">Free</CardTitle>
-                <CardDescription className="text-gray-300">Perfect for getting started</CardDescription>
+                <CardDescription className="text-gray-400">Perfect for getting started</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3 mb-6">
@@ -131,7 +131,7 @@ export default function Home() {
                   </li>
                 </ul>
                 <Link href="/register" className="w-full">
-                  <Button className="w-full bg-green-500 hover:bg-green-600 text-white">Get Started Free</Button>
+                  <Button className="w-full bg-green-500 hover:bg-green-600 text-black">Get Started Free</Button>
                 </Link>
               </CardContent>
             </Card>
@@ -139,8 +139,8 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="border-t border-gray-800 py-8 px-4 bg-gray-900">
-        <div className="container mx-auto text-center text-gray-400">
+      <footer className="border-t border-gray-800 py-8 px-4 bg-black">
+        <div className="container mx-auto text-center text-gray-500">
           <p>&copy; 2025 GEN-PAY. Built with Next.js, Appwrite, and Tron.</p>
         </div>
       </footer>
