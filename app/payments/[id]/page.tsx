@@ -105,7 +105,7 @@ export default function PaymentDetailsPage({ params }: { params: { id: string } 
               <CardDescription className="text-muted-foreground">Send USDT to this address</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-white p-4 rounded-lg border border-border flex justify-center">
+              <div className="bg-background p-4 rounded-lg border border-border flex justify-center">
                 <QRCode value={payment.tronAddress || ""} size={200} />
               </div>
 
@@ -131,7 +131,7 @@ export default function PaymentDetailsPage({ params }: { params: { id: string } 
 
               <div className="bg-secondary border border-border rounded-md p-4">
                 <h4 className="font-medium mb-2 text-foreground">Instructions:</h4>
-                <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                <ol className="text-sm text-foreground space-y-1 list-decimal list-inside">
                   <li>Open your Tron wallet</li>
                   <li>Send exactly {payment.amount} USDT</li>
                   <li>Send to the address above or scan QR code</li>

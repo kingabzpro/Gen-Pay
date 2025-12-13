@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { DollarSign, Plus, Wallet, CreditCard, TrendingUp, ArrowUpRight, Activity, Users } from "lucide-react"
 
 export default function DashboardPage() {
@@ -37,6 +38,7 @@ export default function DashboardPage() {
             <Link href="/payments/create" className="text-muted-foreground hover:text-primary transition-colors">
               Create Payment
             </Link>
+            <ThemeToggle />
             <Button variant="outline" className="border-border text-foreground hover:bg-secondary bg-transparent">
               Logout
             </Button>

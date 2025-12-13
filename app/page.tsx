@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { ArrowRight, Shield, Zap, Globe, DollarSign } from "lucide-react"
 
 export default function Home() {
@@ -22,6 +23,7 @@ export default function Home() {
             <Link href="/login" className="text-muted-foreground hover:text-primary transition-colors">
               Login
             </Link>
+            <ThemeToggle />
             <Link href="/register">
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">Get Started</Button>
             </Link>

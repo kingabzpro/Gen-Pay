@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { DollarSign, Send, ArrowDownToLine, Wallet, Copy, Check, ArrowLeft } from "lucide-react"
 
 export default function WalletPage() {
@@ -77,6 +78,7 @@ export default function WalletPage() {
             <Link href="/wallet" className="text-foreground font-medium">
               Wallet
             </Link>
+            <ThemeToggle />
           </nav>
         </div>
       </header>
@@ -96,7 +98,7 @@ export default function WalletPage() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Your Balance</p>
+                <p className="text-sm text-foreground mb-1">Your Balance</p>
                 <p className="text-4xl font-bold text-foreground">${balance}</p>
                 <p className="text-sm text-primary mt-1">USDT</p>
               </div>
@@ -125,17 +127,17 @@ export default function WalletPage() {
         </Card>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-card border border-border">
+          <TabsList className="grid w-full grid-cols-2 bg-card dark:bg-card border border-border">
             <TabsTrigger
               value="send"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:bg-primary dark:data-[state=active]:text-primary-foreground"
             >
               <Send className="mr-2 h-4 w-4" />
               Send USDT
             </TabsTrigger>
             <TabsTrigger
               value="receive"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:bg-primary dark:data-[state=active]:text-primary-foreground"
             >
               <ArrowDownToLine className="mr-2 h-4 w-4" />
               Receive USDT
@@ -143,10 +145,10 @@ export default function WalletPage() {
           </TabsList>
 
           <TabsContent value="send">
-            <Card>
+            <Card className="border-border dark:bg-card">
               <CardHeader>
-                <CardTitle>Send USDT</CardTitle>
-                <CardDescription>Transfer USDT to another wallet address</CardDescription>
+                <CardTitle className="text-foreground dark:text-card-foreground">Send USDT</CardTitle>
+                <CardDescription className="text-muted-foreground dark:text-card-foreground/70">Transfer USDT to another wallet address</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSend} className="space-y-6">
@@ -160,14 +162,14 @@ export default function WalletPage() {
                       value={sendAddress}
                       onChange={(e) => setSendAddress(e.target.value)}
                       placeholder="TLsV52sRDL79HXGGm9yzwDeVJ2BKsQfdDx"
-                      className="font-mono"
+                      className="font-mono dark:bg-input dark:border-border"
                       required
                     />
-                    <p className="text-xs text-muted-foreground">Enter the Tron wallet address to send USDT to</p>
+                    <p className="text-xs text-muted-foreground dark:text-muted-foreground">Enter the Tron wallet address to send USDT to</p>
                   </div>
 
                   <div className="space-y-2">
-                    <label htmlFor="sendAmount" className="text-sm font-medium text-foreground">
+                    <label htmlFor="sendAmount" className="text-sm font-medium text-foreground dark:text-foreground">
                       Amount (USDT)
                     </label>
                     <Input
@@ -179,12 +181,13 @@ export default function WalletPage() {
                       value={sendAmount}
                       onChange={(e) => setSendAmount(e.target.value)}
                       placeholder="0.00"
+                      className="dark:bg-input dark:border-border"
                       required
                     />
-                    <p className="text-xs text-muted-foreground">Available balance: ${balance} USDT</p>
+                    <p className="text-xs text-muted-foreground dark:text-muted-foreground">Available balance: ${balance} USDT</p>
                   </div>
 
-                  <div className="bg-accent border border-border rounded-md p-4">
+                  <div className="bg-accent/20 dark:bg-black border border-border rounded-md p-4">
                     <h4 className="font-medium mb-2 text-foreground">Transaction Details:</h4>
                     <div className="space-y-1 text-sm text-muted-foreground">
                       <div className="flex justify-between">
@@ -196,7 +199,7 @@ export default function WalletPage() {
                         <span className="text-foreground font-medium">~0.00 TRX</span>
                       </div>
                       <div className="flex justify-between pt-2 border-t border-border">
-                        <span className="font-medium">Total:</span>
+                        <span className="font-medium text-foreground">Total:</span>
                         <span className="text-foreground font-bold">{sendAmount || "0.00"} USDT</span>
                       </div>
                     </div>
@@ -215,10 +218,10 @@ export default function WalletPage() {
           </TabsContent>
 
           <TabsContent value="receive">
-            <Card>
+            <Card className="border-border dark:bg-card">
               <CardHeader>
-                <CardTitle>Receive USDT</CardTitle>
-                <CardDescription>Create a payment link to receive USDT</CardDescription>
+                <CardTitle className="text-foreground dark:text-card-foreground">Receive USDT</CardTitle>
+                <CardDescription className="text-muted-foreground dark:text-card-foreground/70">Create a payment link to receive USDT</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleReceive} className="space-y-6">
@@ -234,12 +237,13 @@ export default function WalletPage() {
                       value={receiveAmount}
                       onChange={(e) => setReceiveAmount(e.target.value)}
                       placeholder="0.00"
+                      className="dark:bg-input dark:border-border"
                       required
                     />
-                    <p className="text-xs text-muted-foreground">Enter the amount you want to receive</p>
+                    <p className="text-xs text-muted-foreground dark:text-muted-foreground">Enter the amount you want to receive</p>
                   </div>
 
-                  <div className="bg-accent border border-border rounded-md p-4">
+                  <div className="bg-accent/20 dark:bg-black border border-border rounded-md p-4">
                     <h4 className="font-medium mb-2 text-foreground">How it works:</h4>
                     <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
                       <li>Enter the amount you want to receive</li>
@@ -249,18 +253,18 @@ export default function WalletPage() {
                     </ol>
                   </div>
 
-                  <div className="bg-primary/10 border border-primary/30 rounded-md p-4">
+                  <div className="bg-primary/10 border border-primary/30 dark:bg-primary/10 rounded-md p-4">
                     <div className="flex items-start space-x-3">
                       <div className="p-2 bg-primary/20 rounded-lg mt-1">
                         <Wallet className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <h4 className="font-medium text-foreground mb-1">Direct Wallet Address</h4>
-                        <p className="text-sm text-muted-foreground mb-3">
+                        <h4 className="font-medium text-foreground dark:text-foreground mb-1">Direct Wallet Address</h4>
+                        <p className="text-sm text-muted-foreground dark:text-muted-foreground mb-3">
                           Or share your wallet address directly for any amount
                         </p>
                         <div className="flex items-center space-x-2">
-                          <code className="flex-1 px-3 py-2 bg-background border border-border rounded-md text-xs text-foreground font-mono">
+                          <code className="flex-1 px-3 py-2 bg-background dark:bg-input border border-border rounded-md text-xs text-foreground font-mono">
                             {walletAddress}
                           </code>
                           <Button
@@ -268,7 +272,7 @@ export default function WalletPage() {
                             variant="outline"
                             size="icon"
                             onClick={() => copyToClipboard(walletAddress)}
-                            className="border-border hover:bg-secondary"
+                            className="border-border hover:bg-secondary dark:border-border dark:hover:bg-secondary"
                           >
                             {copied ? <Check className="h-4 w-4 text-primary" /> : <Copy className="h-4 w-4" />}
                           </Button>

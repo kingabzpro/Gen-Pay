@@ -89,6 +89,7 @@ export default function CreatePaymentPage() {
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
+                  className="bg-background"
                   required
                 />
                 <p className="text-xs text-muted-foreground">Enter the amount you want to receive in USDT</p>
@@ -104,6 +105,7 @@ export default function CreatePaymentPage() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="e.g., Order #12345"
+                  className="bg-background"
                 />
               </div>
 
