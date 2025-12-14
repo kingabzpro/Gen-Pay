@@ -5,7 +5,8 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { DollarSign, Plus, Wallet, CreditCard, TrendingUp, ArrowUpRight, Activity, Users } from "lucide-react"
+import { Logo } from "@/components/logo"
+import { Plus, Wallet, CreditCard, TrendingUp, ArrowUpRight, Activity, Users } from "lucide-react"
 
 export default function DashboardPage() {
   const [stats] = useState({
@@ -21,10 +22,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-background">
       <header className="bg-card border-b border-border">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <DollarSign className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-primary">GEN-PAY</span>
-          </div>
+          <Logo size={32} showText={true} />
           <nav className="hidden md:flex items-center space-x-8">
             <Link href="/dashboard" className="text-foreground font-medium">
               Dashboard
@@ -50,7 +48,7 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-4xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground mt-1">Welcome back! Here's your payment overview.</p>
+            <p className="text-muted-foreground mt-1">Welcome back! Here&apos;s your payment overview.</p>
           </div>
           <Link href="/payments/create">
             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
@@ -135,7 +133,7 @@ export default function DashboardPage() {
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Pending</CardTitle>
               <div className="p-2 bg-primary/10 rounded-lg">
-                <DollarSign className="h-5 w-5 text-primary" />
+                <Activity className="h-5 w-5 text-primary" />
               </div>
             </CardHeader>
             <CardContent>
@@ -190,7 +188,7 @@ export default function DashboardPage() {
                   <Activity className="h-8 w-8 text-primary" />
                 </div>
                 <p className="text-foreground font-medium">No recent activity</p>
-                <p className="text-sm mt-2 text-muted-foreground">Create your first payment to get started</p>
+                <p className="text-sm mt-2 text-muted-foreground">Create your first payment to get started&apos;</p>
                 <Link href="/payments/create" className="mt-4 inline-block">
                   <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
                     Get Started

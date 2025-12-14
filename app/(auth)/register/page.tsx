@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { DollarSign } from "lucide-react"
+import { Logo } from "@/components/logo"
 
 export default function RegisterPage() {
   const [businessName, setBusinessName] = useState("")
@@ -58,10 +58,7 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8">
       <div className="w-full max-w-md">
         <div className="flex justify-center mb-8">
-          <Link href="/" className="flex items-center space-x-2">
-            <DollarSign className="h-10 w-10 text-primary" />
-            <span className="text-3xl font-bold text-primary">GEN-PAY</span>
-          </Link>
+          <Logo size={40} showText={true} />
         </div>
 
         <Card className="bg-card border-border">
