@@ -1,12 +1,12 @@
-import { Account } from "appwrite";
-import { client } from "./client";
-
-export const account = new Account(client);
+import { account } from "./client";
+import { ID } from "appwrite";
+import type { Models } from "appwrite";
 
 export async function createAccount(email: string, password: string, name: string) {
   try {
+    // Appwrite account.create() takes positional parameters: userId, email, password, name
     const user = await account.create(
-      crypto.randomUUID(),
+      ID.unique(),
       email,
       password,
       name
@@ -19,6 +19,7 @@ export async function createAccount(email: string, password: string, name: strin
 
 export async function login(email: string, password: string) {
   try {
+    // Appwrite createEmailPasswordSession expects positional parameters, not an object
     const session = await account.createEmailPasswordSession(email, password);
     return session;
   } catch (error: any) {
@@ -28,16 +29,16 @@ export async function login(email: string, password: string) {
 
 export async function logout() {
   try {
-    await account.deleteSession("current");
+    await account.deleteSession('current');
   } catch (error: any) {
     throw new Error(error.message);
   }
 }
 
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<Models.Session | null> {
   try {
     const user = await account.get();
-    return user;
+    return user as Models.Session;
   } catch (error) {
     return null;
   }

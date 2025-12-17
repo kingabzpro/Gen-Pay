@@ -6,7 +6,9 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "eslint",
-    "start": "next start"
+    "start": "next start",
+    "setup:db": "bash scripts/setup.sh",
+    "setup": "npm run setup:db"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
