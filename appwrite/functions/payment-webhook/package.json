@@ -1,0 +1,1 @@
+{"name": "payment-webhook", "version": "1.0.0", "description": "Handle payment webhooks from Tron network", "main": "index.js", "scripts": {"deploy": "appwrite functions deploy payment-webhook"}, "dependencies": {"appwrite": "^17.0.2", "tronweb": "^6.0.3"}}

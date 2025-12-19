@@ -1,0 +1,1 @@
+{"name": "process-transaction", "version": "1.0.0", "description": "Process USDT transactions on Tron network", "main": "index.js", "scripts": {"deploy": "appwrite functions deploy process-transaction"}, "dependencies": {"appwrite": "^17.0.2", "tronweb": "^6.0.3"}}

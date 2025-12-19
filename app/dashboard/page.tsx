@@ -1,15 +1,28 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Logo } from "@/components/logo"
-import { Plus, Wallet, CreditCard, TrendingUp, ArrowUpRight, Activity, Users } from "lucide-react"
+import { Plus, Wallet, CreditCard, TrendingUp, ArrowUpRight, Activity, Users, LogOut } from "lucide-react"
+import { useAuth } from "@/hooks/useAuth"
+import { useMerchant } from "@/hooks/useMerchant"
+
+interface DashboardStats {
+  balance: number
+  todayPayments: number
+  totalVolume: number
+  activeLinks: number
+  successRate: number
+  pendingPayments: number
+}
 
 export default function DashboardPage() {
-  const [stats] = useState({
+  const { logout, isAuthenticated: authLoading } = useAuth()
+  const { merchant, loading: merchantLoading, error: merchantError } = useMerchant()
+  const [stats, setStats] = useState<DashboardStats>({
     balance: 0,
     todayPayments: 0,
     totalVolume: 0,
@@ -17,6 +30,90 @@ export default function DashboardPage() {
     successRate: 0,
     pendingPayments: 0,
   })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (merchant) {
+      fetchDashboardStats()
+    }
+  }, [merchant])
+
+  const fetchDashboardStats = async () => {
+    try {
+      setLoading(true)
+      
+      // Fetch wallet data
+      const walletResponse = await fetch('/api/merchant/wallet')
+      const walletData = await walletResponse.json()
+      
+      // Fetch transactions
+      const transactionsResponse = await fetch('/api/merchant/transactions')
+      const transactionsData = await transactionsResponse.json()
+      
+      if (walletData.success && transactionsData.success) {
+        const transactions = transactionsData.transactions || []
+        const today = new Date().toDateString()
+        
+        // Calculate stats
+        const todayTransactions = transactions.filter(t => 
+          new Date(t.createdAt).toDateString() === today
+        )
+        const totalVolume = transactions.reduce((sum, t) => sum + t.amount, 0)
+        const completedTransactions = transactions.filter(t => t.status === 'completed')
+        const successRate = transactions.length > 0 
+          ? (completedTransactions.length / transactions.length) * 100 
+          : 0
+
+        setStats({
+          balance: walletData.wallet.balance || 0,
+          todayPayments: todayTransactions.length,
+          totalVolume,
+          activeLinks: 0, // Will be implemented with payment links
+          successRate: Math.round(successRate),
+          pendingPayments: transactions.filter(t => t.status === 'pending').length,
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
+  }
+
+  // If still loading auth, show loading
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // If not authenticated, show login prompt
+  if (!merchant) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-foreground mb-4">Authentication Required</h2>
+          <p className="text-muted-foreground mb-6">Please log in to access your dashboard.</p>
+          <Button onClick={() => window.location.href = '/login'}>
+            Go to Login
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -37,7 +134,12 @@ export default function DashboardPage() {
               Create Payment
             </Link>
             <ThemeToggle />
-            <Button variant="outline" className="border-border text-foreground hover:bg-secondary bg-transparent">
+            <Button 
+              variant="outline" 
+              className="border-border text-foreground hover:bg-secondary bg-transparent"
+              onClick={handleLogout}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
               Logout
             </Button>
           </nav>

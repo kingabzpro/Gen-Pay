@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Logo } from "@/components/logo"
+import { useAuth } from "@/hooks/useAuth"
 
 export default function RegisterPage() {
   const [businessName, setBusinessName] = useState("")
@@ -18,6 +19,7 @@ export default function RegisterPage() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { register } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,18 +38,11 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ businessName, email, password }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Registration failed")
-      }
-
-      router.push("/dashboard")
-    } catch (err: any) {
+      await register(businessName, email, password)
+      // Note: register function already handles navigation to dashboard
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Registration failed"
+      setError(errorMessage)
       setError(err.message || "Failed to create account")
     } finally {
       setLoading(false)
