@@ -12,7 +12,7 @@ import { Logo } from "@/components/logo"
 import { useAuth } from "@/hooks/useAuth"
 
 export default function RegisterPage() {
-  const [businessName, setBusinessName] = useState("")
+  const [fullName, setFullName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -38,7 +38,7 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      await register(businessName, email, password)
+      await register(fullName, email, password)
       // Note: register function already handles navigation to dashboard
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Registration failed"
@@ -58,8 +58,8 @@ export default function RegisterPage() {
 
         <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-foreground">Create Merchant Account</CardTitle>
-            <CardDescription className="text-muted-foreground">Start accepting USDT payments today</CardDescription>
+            <CardTitle className="text-foreground">Create Account</CardTitle>
+            <CardDescription className="text-muted-foreground">Create your TRON wallet account</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -68,15 +68,15 @@ export default function RegisterPage() {
               )}
 
               <div className="space-y-2">
-                <label htmlFor="businessName" className="text-sm font-medium text-foreground">
-                  Business Name
+                <label htmlFor="fullName" className="text-sm font-medium text-foreground">
+                  Full Name
                 </label>
                 <Input
-                  id="businessName"
+                  id="fullName"
                   type="text"
-                  value={businessName}
-                  onChange={(e) => setBusinessName(e.target.value)}
-                  placeholder="Acme Inc."
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="John Doe"
                   required
                   className="bg-input border-border text-foreground placeholder-muted-foreground"
                 />

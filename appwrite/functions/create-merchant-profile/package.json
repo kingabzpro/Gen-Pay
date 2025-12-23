@@ -1,1 +1,0 @@
-{"name": "create-merchant-profile", "version": "1.0.0", "description": "Create merchant profile after user registration", "main": "index.js", "scripts": {"deploy": "appwrite functions deploy create-merchant-profile"}, "dependencies": {"appwrite": "^17.0.2"}}
