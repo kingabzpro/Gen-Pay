@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { signOut } from '@/lib/supabase/auth';
+import { signOut } from '@/lib/supabase/server-auth';
 
 export async function POST(request: NextRequest) {
   try {

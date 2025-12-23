@@ -1,4 +1,4 @@
-import type { createClient } from '@/lib/supabase/client';
+// Server-side Supabase client
 import { encryptPrivateKey, decryptPrivateKey } from '@/lib/crypto/encryption';
 
 const USDT_CONTRACT = process.env.TRON_USDT_CONTRACT_NILE || 'TLa2f6VPqDgRE67v1736s7bJ8Ray5wYjU7';
@@ -22,7 +22,7 @@ async function getTronWeb() {
 }
 
 export async function createWalletForUser(userId: string): Promise<WalletData> {
-  const { createClient } = await import('@/lib/supabase/client');
+  const { createClient } = await import('@/lib/supabase/server');
   const supabase = createClient();
   const tronWeb = await getTronWeb();
 
@@ -57,7 +57,7 @@ export async function createWalletForUser(userId: string): Promise<WalletData> {
 }
 
 export async function getWalletByUserId(userId: string): Promise<WalletData | null> {
-  const { createClient } = await import('@/lib/supabase/client');
+  const { createClient } = await import('@/lib/supabase/server');
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -104,7 +104,7 @@ export async function getTRXBalance(address: string): Promise<number> {
 }
 
 export async function syncWalletBalance(walletId: string): Promise<void> {
-  const { createClient } = await import('@/lib/supabase/client');
+  const { createClient } = await import('@/lib/supabase/server');
   const supabase = createClient();
   const tronWeb = await getTronWeb();
 
@@ -137,7 +137,7 @@ export async function sendUSDT(
   toAddress: string,
   amount: number
 ): Promise<{ success: boolean; txHash?: string; error?: string }> {
-  const { createClient } = await import('@/lib/supabase/client');
+  const { createClient } = await import('@/lib/supabase/server');
   const supabase = createClient();
   const tronWeb = await getTronWeb();
 

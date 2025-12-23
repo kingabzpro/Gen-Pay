@@ -30,7 +30,16 @@ export function useAuth() {
     try {
       setError(null);
       setLoading(true);
-      const { user } = await signUp(email, password, fullName);
+      const { user, session } = await signUp(email, password, fullName);
+
+      // If there's no session, email confirmation is required
+      // Redirect to verify-email page
+      if (!session) {
+        router.push('/verify-email');
+        return;
+      }
+
+      // If session exists, user is logged in immediately
       setUser(user);
       router.push('/dashboard');
     } catch (error: any) {

@@ -48,7 +48,7 @@ export function TransactionTable({ transactions, loading }: TransactionTableProp
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center space-x-2">
                   {tx.type === 'send' ? (
-                    <ArrowUpRight className="w-4 h-4 text-red-500" />
+                    <ArrowUpRight className="w-4 h-4 text-green-500" />
                   ) : (
                     <ArrowDownLeft className="w-4 h-4 text-green-500" />
                   )}
@@ -56,7 +56,7 @@ export function TransactionTable({ transactions, loading }: TransactionTableProp
                     variant={tx.type === 'send' ? 'destructive' : 'secondary'}
                     className={
                       tx.type === 'send'
-                        ? 'bg-red-500/20 text-red-400'
+                        ? 'bg-green-500/20 text-green-400'
                         : 'bg-green-500/20 text-green-400'
                     }
                   >
@@ -78,7 +78,7 @@ export function TransactionTable({ transactions, loading }: TransactionTableProp
                       ? 'border-green-500/50 text-green-400'
                       : tx.status === 'pending'
                       ? 'border-yellow-500/50 text-yellow-400'
-                      : 'border-red-500/50 text-red-400'
+                      : 'border-green-500/50 text-green-400'
                   }
                 >
                   {tx.status}

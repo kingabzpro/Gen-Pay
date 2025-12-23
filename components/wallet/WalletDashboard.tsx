@@ -21,6 +21,8 @@ export function WalletDashboard() {
   const [sendAmount, setSendAmount] = useState('');
   const [sendAddress, setSendAddress] = useState('');
   const [sending, setSending] = useState(false);
+  const [creatingWallet, setCreatingWallet] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchWallet();
@@ -28,14 +30,18 @@ export function WalletDashboard() {
 
   const fetchWallet = async () => {
     try {
+      setError(null);
       const response = await fetch('/api/wallet/balance');
       const data = await response.json();
 
       if (data.success) {
         setWallet(data.wallet);
+      } else {
+        setError(data.error || 'Failed to fetch wallet');
       }
     } catch (error) {
       console.error('Error fetching wallet:', error);
+      setError('Failed to connect to server');
     } finally {
       setLoading(false);
     }
@@ -87,11 +93,11 @@ export function WalletDashboard() {
       <GlassCard className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
-            <Wallet className="w-6 h-6 text-red-500" />
+            <Wallet className="w-6 h-6 text-green-500" />
             <h2 className="text-xl font-bold text-white">My Wallet</h2>
           </div>
           {wallet && (
-            <Badge variant="secondary" className="bg-red-500/20 text-red-400">
+            <Badge variant="secondary" className="bg-green-500/20 text-green-400">
               TRON Testnet
             </Badge>
           )}
@@ -132,17 +138,35 @@ export function WalletDashboard() {
           <div className="text-center py-8">
             <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
             <p className="text-white mb-4">No wallet found</p>
+            {error && (
+              <div className="bg-red-900/50 border border-red-800 text-red-300 rounded-lg p-3 mb-4 text-sm">
+                {error}
+              </div>
+            )}
             <Button
               onClick={async () => {
-                const response = await fetch('/api/wallet/create', { method: 'POST' });
-                const data = await response.json();
-                if (data.success) {
-                  fetchWallet();
+                try {
+                  setCreatingWallet(true);
+                  setError(null);
+                  const response = await fetch('/api/wallet/create', { method: 'POST' });
+                  const data = await response.json();
+
+                  if (data.success) {
+                    await fetchWallet();
+                  } else {
+                    setError(data.error || 'Failed to create wallet');
+                  }
+                } catch (error) {
+                  console.error('Create wallet error:', error);
+                  setError('Failed to connect to server');
+                } finally {
+                  setCreatingWallet(false);
                 }
               }}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-green-600 hover:bg-green-700"
+              disabled={creatingWallet}
             >
-              Create Wallet
+              {creatingWallet ? 'Creating Wallet...' : 'Create Wallet'}
             </Button>
           </div>
         )}
@@ -152,7 +176,7 @@ export function WalletDashboard() {
       {wallet && (
         <GlassCard className="p-6">
           <h3 className="text-lg font-bold text-white mb-4 flex items-center">
-            <Send className="w-5 h-5 mr-2 text-red-500" />
+            <Send className="w-5 h-5 mr-2 text-green-500" />
             Send USDT
           </h3>
 
@@ -185,7 +209,7 @@ export function WalletDashboard() {
             <Button
               onClick={handleSend}
               disabled={sending || !sendAmount || !sendAddress}
-              className="w-full bg-red-600 hover:bg-red-700"
+              className="w-full bg-green-600 hover:bg-green-700"
             >
               {sending ? 'Sending...' : 'Send USDT'}
             </Button>

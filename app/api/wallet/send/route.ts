@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/supabase/auth';
+import { getCurrentUser } from '@/lib/supabase/server-auth';
 import { getWalletByUserId, sendUSDT } from '@/lib/services/wallet';
 import { z } from 'zod';
 
@@ -10,7 +10,7 @@ const sendSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser();
+    const user = await getCurrentUser(request);
     if (!user) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
