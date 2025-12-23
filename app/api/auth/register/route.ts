@@ -1,35 +1,36 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { createAccount } from '@/lib/appwrite/auth'
+import { NextRequest, NextResponse } from 'next/server';
+import { signUp } from '@/lib/supabase/auth';
 
 export async function POST(request: NextRequest) {
   try {
-    const { businessName, email, password } = await request.json()
+    const { email, password, fullName } = await request.json();
 
-    if (!businessName || !email || !password) {
+    if (!email || !password || !fullName) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
-      )
+      );
     }
 
     if (password.length < 8) {
       return NextResponse.json(
         { error: 'Password must be at least 8 characters' },
         { status: 400 }
-      )
+      );
     }
 
-    const user = await createAccount(email, password, businessName)
-    
-    return NextResponse.json(
-      { message: 'Account created successfully', user },
-      { status: 201 }
-    )
+    const { user, session } = await signUp(email, password, fullName);
+
+    return NextResponse.json({
+      success: true,
+      user,
+      session
+    });
   } catch (error: any) {
-    console.error('Registration error:', error)
+    console.error('Registration error:', error);
     return NextResponse.json(
-      { error: error.message || 'Registration failed' },
+      { success: false, error: error.message || 'Registration failed' },
       { status: 400 }
-    )
+    );
   }
 }

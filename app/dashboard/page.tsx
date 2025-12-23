@@ -1,204 +1,111 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { Logo } from "@/components/logo"
-import { Plus, Wallet, CreditCard, TrendingUp, ArrowUpRight, Activity, Users } from "lucide-react"
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { WalletDashboard } from '@/components/wallet/WalletDashboard';
+import { TransactionTable } from '@/components/wallet/TransactionTable';
+import { GlassCard } from '@/components/ui/glass-card';
+import { Button } from '@/components/ui/button';
+import { WarningBadge } from '@/components/ui/warning-badge';
+import { LogOut, Activity, Shield } from 'lucide-react';
+import Link from 'next/link';
+import type { User } from '@supabase/supabase-js';
+
+interface Transaction {
+  id: string;
+  type: 'send' | 'receive';
+  amount_usdt: number;
+  status: string;
+  created_at: string;
+  to_address?: string;
+  from_address?: string;
+  tx_hash?: string;
+}
 
 export default function DashboardPage() {
-  const [stats] = useState({
-    balance: 0,
-    todayPayments: 0,
-    totalVolume: 0,
-    activeLinks: 0,
-    successRate: 0,
-    pendingPayments: 0,
-  })
+  const { user, logout, isAuthenticated } = useAuth();
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      fetchTransactions();
+    }
+  }, [user]);
+
+  const fetchTransactions = async () => {
+    try {
+      const response = await fetch('/api/transactions');
+      const data = await response.json();
+
+      if (data.success) {
+        setTransactions(data.transactions);
+      }
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <GlassCard className="p-8">
+          <h2 className="text-2xl font-bold text-white mb-4">
+            Authentication Required
+          </h2>
+          <Link href="/login">
+            <Button className="bg-red-600 hover:bg-red-700">
+              Go to Login
+            </Button>
+          </Link>
+        </GlassCard>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="bg-card border-b border-border">
+    <div className="min-h-screen bg-black">
+      <header className="bg-black/40 backdrop-blur-md border-b border-white/10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Logo size={32} showText={true} />
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/dashboard" className="text-foreground font-medium">
-              Dashboard
-            </Link>
-            <Link href="/payments" className="text-muted-foreground hover:text-primary transition-colors">
-              Payments
-            </Link>
-            <Link href="/wallet" className="text-muted-foreground hover:text-primary transition-colors">
-              Wallet
-            </Link>
-            <Link href="/payments/create" className="text-muted-foreground hover:text-primary transition-colors">
-              Create Payment
-            </Link>
-            <ThemeToggle />
-            <Button variant="outline" className="border-border text-foreground hover:bg-secondary bg-transparent">
+          <div className="flex items-center space-x-4">
+            <h1 className="text-2xl font-bold text-white">GEN-PAY</h1>
+            <WarningBadge message="TRON TESTNET – CUSTODIAL WALLET" />
+          </div>
+          <div className="flex items-center space-x-4">
+            <span className="text-gray-400">{user?.email}</span>
+            <Button
+              variant="outline"
+              onClick={logout}
+              className="border-white/10 text-white hover:bg-white/10"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
               Logout
             </Button>
-          </nav>
+          </div>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground mt-1">Welcome back! Here&apos;s your payment overview.</p>
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-white mb-2">Dashboard</h2>
+          <div className="flex items-center space-x-2">
+            <p className="text-gray-400">Welcome to your TRON wallet</p>
+            <Shield className="w-4 h-4 text-red-500" />
           </div>
-          <Link href="/payments/create">
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Plus className="mr-2 h-4 w-4" />
-              Create Payment
-            </Button>
-          </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-card border-border hover:border-primary/50 transition-colors">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Prepaid Balance</CardTitle>
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Wallet className="h-5 w-5 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-foreground">${stats.balance.toFixed(2)}</div>
-              <p className="text-xs text-muted-foreground mt-1 flex items-center">
-                <span className="text-primary mr-1">USDT</span> Available
-              </p>
-            </CardContent>
-          </Card>
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <WalletDashboard />
+          </div>
 
-          <Card className="bg-card border-border hover:border-primary/50 transition-colors">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Payments Today</CardTitle>
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <CreditCard className="h-5 w-5 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-foreground">{stats.todayPayments}</div>
-              <p className="text-xs text-muted-foreground mt-1 flex items-center">
-                <ArrowUpRight className="h-3 w-3 text-primary mr-1" />
-                Transactions processed
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card border-border hover:border-primary/50 transition-colors">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Volume</CardTitle>
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <TrendingUp className="h-5 w-5 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-foreground">${stats.totalVolume.toFixed(2)}</div>
-              <p className="text-xs text-muted-foreground mt-1">All time revenue</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card border-border hover:border-primary/50 transition-colors">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Active Links</CardTitle>
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Activity className="h-5 w-5 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-foreground">{stats.activeLinks}</div>
-              <p className="text-xs text-muted-foreground mt-1">Payment links created</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card border-border hover:border-primary/50 transition-colors">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Success Rate</CardTitle>
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Users className="h-5 w-5 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-foreground">{stats.successRate}%</div>
-              <p className="text-xs text-muted-foreground mt-1">Payment completion rate</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card border-border hover:border-primary/50 transition-colors">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Pending</CardTitle>
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Activity className="h-5 w-5 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-foreground">{stats.pendingPayments}</div>
-              <p className="text-xs text-muted-foreground mt-1">Awaiting confirmation</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle className="text-foreground">Quick Actions</CardTitle>
-              <CardDescription className="text-muted-foreground">Get started with common tasks</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Link href="/payments/create" className="block">
-                <Button className="w-full justify-start bg-primary hover:bg-primary/90 text-primary-foreground">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Payment Link
-                </Button>
-              </Link>
-              <Link href="/payments" className="block">
-                <Button
-                  variant="outline"
-                  className="w-full justify-start border-border text-foreground hover:bg-secondary hover:text-primary bg-transparent"
-                >
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  View All Payments
-                </Button>
-              </Link>
-              <Link href="/api-keys" className="block">
-                <Button
-                  variant="outline"
-                  className="w-full justify-start border-border text-foreground hover:bg-secondary hover:text-primary bg-transparent"
-                >
-                  <Activity className="mr-2 h-4 w-4" />
-                  Manage API Keys
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle className="text-foreground">Recent Activity</CardTitle>
-              <CardDescription className="text-muted-foreground">Your latest transactions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-                  <Activity className="h-8 w-8 text-primary" />
-                </div>
-                <p className="text-foreground font-medium">No recent activity</p>
-                <p className="text-sm mt-2 text-muted-foreground">Create your first payment to get started&apos;</p>
-                <Link href="/payments/create" className="mt-4 inline-block">
-                  <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                    Get Started
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
+          <div>
+            <TransactionTable transactions={transactions} loading={loading} />
+          </div>
         </div>
       </main>
     </div>
-  )
+  );
 }

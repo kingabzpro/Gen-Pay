@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  themeColor: "#05F47B",
+  themeColor: "#dc2626",
 };
 
 export default function RootLayout({
@@ -40,10 +40,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >

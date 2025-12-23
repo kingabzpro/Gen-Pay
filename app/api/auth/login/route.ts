@@ -1,28 +1,28 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { login } from '@/lib/appwrite/auth'
+import { NextRequest, NextResponse } from 'next/server';
+import { signIn } from '@/lib/supabase/auth';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { email, password } = body
+    const { email, password } = await request.json();
 
     if (!email || !password) {
       return NextResponse.json(
         { error: 'Email and password are required' },
         { status: 400 }
-      )
+      );
     }
 
-    const session = await login(email, password)
+    const { user, session } = await signIn(email, password);
 
-    return NextResponse.json(
-      { message: 'Login successful', session },
-      { status: 200 }
-    )
+    return NextResponse.json({
+      success: true,
+      user,
+      session
+    });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || 'Login failed' },
+      { success: false, error: error.message || 'Login failed' },
       { status: 401 }
-    )
+    );
   }
 }

@@ -1,59 +1,89 @@
+"use client";
+
 import { useState, useEffect } from 'react';
-import { account } from '@/lib/appwrite/client';
-import { ID } from 'appwrite';
-import type { Models } from 'appwrite';
+import { getCurrentUser, signIn, signOut, signUp } from '@/lib/supabase/auth';
 import { useRouter } from 'next/navigation';
+import type { User } from '@supabase/supabase-js';
 
 export function useAuth() {
-    const [current, setCurrent] = useState<Models.Session | null>(null);
-    const [loading, setLoading] = useState(true);
-    const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-    const register = async (email: string, password: string, name: string): Promise<void> => {
-        await account.create({
-            userId: ID.unique(),
-            email,
-            password,
-            name
-        });
-        await login(email, password);
-    };
+  const login = async (email: string, password: string): Promise<void> => {
+    try {
+      setError(null);
+      setLoading(true);
+      const { user } = await signIn(email, password);
+      setUser(user);
+      router.push('/dashboard');
+    } catch (error: any) {
+      setError(error.message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const login = async (email: string, password: string): Promise<void> => {
-        const session = await account.createEmailPasswordSession({
-            email,
-            password
-        });
-        setCurrent(session);
-        router.push('/dashboard');
-    };
+  const register = async (fullName: string, email: string, password: string): Promise<void> => {
+    try {
+      setError(null);
+      setLoading(true);
+      const { user, session } = await signUp(email, password, fullName);
 
-    const logout = async (): Promise<void> => {
-        await account.deleteSession('current');
-        setCurrent(null);
-        router.push('/');
-    };
+      // If there's no session, email confirmation is required
+      // Redirect to verify-email page
+      if (!session) {
+        router.push('/verify-email');
+        return;
+      }
 
-    const getCurrentUser = async () => {
-        try {
-            const user = await account.get();
-            setCurrent(user);
-        } catch (error) {
-            setCurrent(null);
-        } finally {
-            setLoading(false);
-        }
-    };
+      // If session exists, user is logged in immediately
+      setUser(user);
+      router.push('/dashboard');
+    } catch (error: any) {
+      setError(error.message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        getCurrentUser();
-    }, []);
+  const logout = async (): Promise<void> => {
+    try {
+      setError(null);
+      await signOut();
+      setUser(null);
+      router.push('/');
+    } catch (error: any) {
+      console.error('Logout error:', error);
+      setUser(null);
+      router.push('/');
+    }
+  };
 
-    return {
-        current,
-        loading,
-        login,
-        logout,
-        register,
-    };
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const currentUser = await getCurrentUser();
+        setUser(currentUser);
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchUser();
+  }, []);
+
+  return {
+    user,
+    loading,
+    error,
+    login,
+    register,
+    logout,
+    isAuthenticated: !!user,
+  };
 }

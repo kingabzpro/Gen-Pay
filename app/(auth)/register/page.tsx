@@ -9,15 +9,17 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Logo } from "@/components/logo"
+import { useAuth } from "@/hooks/useAuth"
 
 export default function RegisterPage() {
-  const [businessName, setBusinessName] = useState("")
+  const [fullName, setFullName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { register } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,18 +38,11 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ businessName, email, password }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Registration failed")
-      }
-
-      router.push("/dashboard")
-    } catch (err: any) {
+      await register(fullName, email, password)
+      // Note: register function already handles navigation to dashboard
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Registration failed"
+      setError(errorMessage)
       setError(err.message || "Failed to create account")
     } finally {
       setLoading(false)
@@ -63,8 +58,8 @@ export default function RegisterPage() {
 
         <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-foreground">Create Merchant Account</CardTitle>
-            <CardDescription className="text-muted-foreground">Start accepting USDT payments today</CardDescription>
+            <CardTitle className="text-foreground">Create Account</CardTitle>
+            <CardDescription className="text-muted-foreground">Create your TRON wallet account</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -73,15 +68,15 @@ export default function RegisterPage() {
               )}
 
               <div className="space-y-2">
-                <label htmlFor="businessName" className="text-sm font-medium text-foreground">
-                  Business Name
+                <label htmlFor="fullName" className="text-sm font-medium text-foreground">
+                  Full Name
                 </label>
                 <Input
-                  id="businessName"
+                  id="fullName"
                   type="text"
-                  value={businessName}
-                  onChange={(e) => setBusinessName(e.target.value)}
-                  placeholder="Acme Inc."
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="John Doe"
                   required
                   className="bg-input border-border text-foreground placeholder-muted-foreground"
                 />
