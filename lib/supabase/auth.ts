@@ -7,6 +7,7 @@ export async function signUp(email: string, password: string, fullName: string) 
     email,
     password,
     options: {
+      emailRedirectTo: 'https://gen-pay-amber.vercel.app/verify-email',
       data: {
         full_name: fullName
       }
