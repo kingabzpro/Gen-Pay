@@ -1,4 +1,4 @@
-import TronWeb from 'tronweb';
+import { TronWeb } from 'tronweb';
 
 class TronUSDTService {
   private tronWeb: any;

@@ -66,6 +66,9 @@ CREATE POLICY "Users can update own profile" ON public.profiles
 CREATE POLICY "Users can view own wallets" ON public.wallets
   FOR SELECT USING (auth.uid() = user_id);
 
+CREATE POLICY "Users can create own wallets" ON public.wallets
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
 CREATE POLICY "Service role can manage wallets" ON public.wallets
   FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');
 

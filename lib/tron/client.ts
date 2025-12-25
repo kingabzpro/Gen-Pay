@@ -2,7 +2,7 @@ import { TronWeb } from "tronweb"
 
 const tronWeb = new TronWeb({
   fullHost: "https://api.shasta.trongrid.io",
-  privateKey: process.env.TRON_PRIVATE_KEY,
+  privateKey: process.env.TRON_PRIVATE_KEY || '',
 })
 
 export default tronWeb

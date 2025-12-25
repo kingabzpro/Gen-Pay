@@ -12,7 +12,7 @@ export interface WalletData {
 }
 
 async function getTronWeb() {
-  const TronWeb = (await import('tronweb')).default;
+  const { TronWeb } = await import('tronweb');
   return new TronWeb({
     fullHost: process.env.NEXT_PUBLIC_TRON_NILE_RPC || 'https://api.nileex.io',
     headers: {
@@ -23,13 +23,29 @@ async function getTronWeb() {
 
 export async function createWalletForUser(userId: string): Promise<WalletData> {
   const { createClient } = await import('@/lib/supabase/server');
-  const supabase = createClient();
+  const supabase = await createClient();
   const tronWeb = await getTronWeb();
 
   // Generate new account
   const account = await tronWeb.createAccount();
-  const address = account.address.base58;
-  const privateKey = account.privateKey;
+
+  // Handle different return formats from TronWeb
+  let address: string;
+  let privateKey: string;
+
+  if (account.address && account.address.base58) {
+    address = account.address.base58;
+    privateKey = account.privateKey;
+  } else if (account.address) {
+    address = typeof account.address === 'string' ? account.address : account.address.base58 || account.address[0];
+    privateKey = account.privateKey || account.private_key;
+  } else {
+    throw new Error('Failed to generate wallet address');
+  }
+
+  if (!privateKey) {
+    throw new Error('Failed to get private key');
+  }
 
   // Encrypt private key
   const encryptedPrivateKey = encryptPrivateKey(privateKey);
@@ -40,7 +56,9 @@ export async function createWalletForUser(userId: string): Promise<WalletData> {
     .insert({
       user_id: userId,
       address: address,
-      encrypted_private_key: encryptedPrivateKey
+      encrypted_private_key: encryptedPrivateKey,
+      balance_usdt: 0,
+      balance_trx: 0
     })
     .select()
     .single();
@@ -58,7 +76,7 @@ export async function createWalletForUser(userId: string): Promise<WalletData> {
 
 export async function getWalletByUserId(userId: string): Promise<WalletData | null> {
   const { createClient } = await import('@/lib/supabase/server');
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from('wallets')
@@ -105,7 +123,7 @@ export async function getTRXBalance(address: string): Promise<number> {
 
 export async function syncWalletBalance(walletId: string): Promise<void> {
   const { createClient } = await import('@/lib/supabase/server');
-  const supabase = createClient();
+  const supabase = await createClient();
   const tronWeb = await getTronWeb();
 
   const { data: wallet, error: walletError } = await supabase
@@ -138,7 +156,7 @@ export async function sendUSDT(
   amount: number
 ): Promise<{ success: boolean; txHash?: string; error?: string }> {
   const { createClient } = await import('@/lib/supabase/server');
-  const supabase = createClient();
+  const supabase = await createClient();
   const tronWeb = await getTronWeb();
 
   const { data: wallet, error: walletError } = await supabase
@@ -148,6 +166,25 @@ export async function sendUSDT(
     .single();
 
   if (walletError) throw walletError;
+
+  // Check USDT balance
+  const currentUSDTBalance = await getUSDTBalance(wallet.address);
+  if (currentUSDTBalance < amount) {
+    return {
+      success: false,
+      error: `Insufficient USDT balance. Available: ${currentUSDTBalance.toFixed(2)} USDT, Required: ${amount.toFixed(2)} USDT`
+    };
+  }
+
+  // Check TRX balance for gas fees (need at least ~1 TRX for transaction)
+  const currentTRXBalance = await getTRXBalance(wallet.address);
+  const MIN_TRX_FOR_GAS = 5; // 5 TRX minimum for safety
+  if (currentTRXBalance < MIN_TRX_FOR_GAS) {
+    return {
+      success: false,
+      error: `Insufficient TRX for gas fees. Please add at least ${MIN_TRX_FOR_GAS} TRX to your wallet. Current balance: ${currentTRXBalance.toFixed(2)} TRX`
+    };
+  }
 
   // Decrypt private key
   const privateKey = decryptPrivateKey(wallet.encrypted_private_key);
@@ -159,7 +196,7 @@ export async function sendUSDT(
     const transaction = await contract.transfer(toAddress, amountInSun).send({
       fromAddress: wallet.address,
       privateKey,
-      feeLimit: 10000000 // 10 TRX
+      feeLimit: 10000000 // 10 TRX max fee
     });
 
     // Record transaction
@@ -175,6 +212,9 @@ export async function sendUSDT(
         to_address: toAddress,
         status: 'pending'
       });
+
+    // Sync balance after transaction
+    await syncWalletBalance(fromWalletId);
 
     return {
       success: true,
