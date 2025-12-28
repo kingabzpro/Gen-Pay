@@ -1,53 +1,36 @@
 # GEN-PAY
 
-A TRON testnet custodial wallet platform built with Next.js 16 App Router:
+A multi-currency personal banking platform built with Next.js 16 App Router, inspired by Wise:
 
 - **Frontend:** Next.js 16 + Tailwind CSS + shadcn/ui + Framer Motion
 - **Backend:** Supabase (Database + Auth)
-- **Blockchain:** TRON Nile Testnet using **USDT (TRC-20)**
-- **Security:** AES-256-GCM encrypted private keys (server-side only)
+- **Features:** Multi-currency accounts (USD, EUR, GBP), Virtual Debit Cards, International Transfers
+- **Security:** Row Level Security (RLS), Secure API routes
 
-## ⚠️ Important Warnings
+## Features
 
-### Custodial Wallet Model
-This application uses a **custodial wallet model** where:
-- Private keys are generated and stored **server-side only**
-- Private keys are **encrypted** using AES-256-GCM before storage
-- Users **never have access** to their plaintext private keys
-- The platform controls all wallet operations on behalf of users
+### Multi-Currency Banking
+- **Personal Accounts:** Hold and manage multiple currency accounts (USD, EUR, GBP)
+- **Real Exchange Rates:** Live currency conversion rates
+- **Account Management:** Open/close currency accounts, view balances
 
-### TRON Testnet Usage
-- This application operates on the **TRON Nile Testnet only**
-- Testnet tokens have **no real-world value**
-- All transactions are for **testing and development purposes only**
-- **DO NOT** use with mainnet funds
+### Virtual Debit Cards
+- **Virtual Cards:** Generate virtual debit cards for online purchases
+- **Card Management:** View card details, set spending limits, freeze/unfreeze cards
+- **Transaction History:** Track all card transactions
 
-## What You'll Build
+### International Transfers
+- **Send Money:** Transfer money to other GEN-PAY users
+- **Bank Transfers:** Send to external bank accounts
+- **Fee Calculator:** View fees before sending
+- **Transfer Status:** Track transfer progress
 
-- **Custodial TRON wallet** generation for each user
-- **USDT (TRC-20) balance** tracking and display
-- **USDT transfers** between users
-- **Transaction history** with confirmation status
-- **Glassmorphism UI** with red/black/white theme
-- **QR code** wallet addresses
-- **Row Level Security** (RLS) for data protection
-
-## Security Features
-
-1. **Private Key Encryption**
-   - All private keys are encrypted with AES-256-GCM
-   - Encryption master key stored in environment variables
-   - Keys are only decrypted server-side during transactions
-
-2. **Row Level Security (RLS)**
-   - Users can only access their own data
-   - Service role operations isolated from client access
-   - Database policies enforce data isolation
-
-3. **API Security**
-   - Input validation with Zod schemas
-   - Authentication required for all wallet operations
-   - Protected routes via middleware
+### Additional Wise-like Features
+- **Payment Links:** Create shareable payment links
+- **Scheduled Payments:** Set up recurring transfers
+- **Transaction Categorization:** Auto-categorize spending
+- **Spending Analytics:** Visual insights and reports
+- **Multi-Language Support:** International user support
 
 ## Quick Start
 
@@ -67,13 +50,7 @@ npm install
    ```
 3. Get your project URL and keys from Supabase Dashboard → Settings → API
 
-### 3. Generate Encryption Key
-
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
-```
-
-### 4. Configure Environment Variables
+### 3. Configure Environment Variables
 
 Create `.env.local` file:
 
@@ -83,22 +60,14 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
-# TRON (Nile Testnet)
-NEXT_PUBLIC_TRON_NILE_RPC=https://api.nileex.io
-TRON_USDT_CONTRACT_NILE=TLa2f6VPqDgRE67v1736s7bJ8Ray5wYjU7
-TRON_API_KEY=your_trongrid_api_key
+# Exchange Rate API (optional - uses free tier)
+NEXT_PUBLIC_EXCHANGE_RATE_API_KEY=your_exchange_rate_api_key
 
-# Encryption
-ENCRYPTION_MASTER_KEY=your_generated_base64_key
+# Card Issuing API (optional - for virtual card integration)
+NEXT_PUBLIC_CARD_ISSUING_API_KEY=your_card_issuing_api_key
 ```
 
-### 5. Get TRON API Key
-
-1. Sign up at https://www.trongrid.io
-2. Create a new app
-3. Copy the API key to `.env.local`
-
-### 6. Run Development Server
+### 4. Run Development Server
 
 ```bash
 npm run dev
@@ -114,28 +83,44 @@ Open http://localhost:3000
 │   │   ├── login/
 │   │   └── register/
 │   ├── api/
-│   │   ├── auth/
-│   │   ├── wallet/
-│   │   └── transactions/
+│   │   ├── accounts/
+│   │   ├── cards/
+│   │   ├── transfers/
+│   │   └── exchange-rates/
 │   ├── dashboard/
+│   ├── transfers/
+│   ├── cards/
 │   └── page.tsx
 ├── components/
 │   ├── ui/
 │   │   ├── glass-card.tsx
 │   │   └── warning-badge.tsx
-│   └── wallet/
-│       ├── WalletDashboard.tsx
-│       ├── BalanceCard.tsx
-│       ├── SendUsdtModal.tsx
-│       └── TransactionTable.tsx
+│   ├── accounts/
+│   │   ├── AccountCard.tsx
+│   │   ├── CreateAccountModal.tsx
+│   │   └── AccountList.tsx
+│   ├── cards/
+│   │   ├── VirtualCard.tsx
+│   │   ├── CardDetails.tsx
+│   │   └── CreateCardModal.tsx
+│   ├── transfers/
+│   │   ├── TransferForm.tsx
+│   │   ├── TransferHistory.tsx
+│   │   └── FeeCalculator.tsx
+│   └── analytics/
+│       ├── SpendingChart.tsx
+│       └── CategoryBreakdown.tsx
 ├── lib/
 │   ├── supabase/
 │   │   ├── client.ts
 │   │   └── auth.ts
-│   ├── crypto/
-│   │   └── encryption.ts
-│   └── services/
-│       └── wallet.ts
+│   ├── services/
+│   │   ├── accounts.ts
+│   │   ├── cards.ts
+│   │   ├── transfers.ts
+│   │   └── exchange-rates.ts
+│   └── utils/
+│       └── format-currency.ts
 ├── supabase/
 │   └── migrations/
 │       └── 001_initial_schema.sql
@@ -144,46 +129,71 @@ Open http://localhost:3000
 
 ## API Routes
 
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `POST /api/auth/logout` - Logout user
-- `POST /api/wallet/create` - Create wallet for user
-- `GET /api/wallet/balance` - Get wallet balance
-- `POST /api/wallet/send` - Send USDT to another address
-- `GET /api/transactions` - Get transaction history
+### Accounts
+- `GET /api/accounts` - Get all user accounts
+- `POST /api/accounts` - Create new currency account
+- `GET /api/accounts/[id]` - Get account details
+- `DELETE /api/accounts/[id]` - Close account
+
+### Cards
+- `GET /api/cards` - Get all virtual cards
+- `POST /api/cards` - Create new virtual card
+- `GET /api/cards/[id]` - Get card details
+- `PATCH /api/cards/[id]` - Update card (freeze/unfreeze, set limits)
+- `DELETE /api/cards/[id]` - Delete card
+
+### Transfers
+- `GET /api/transfers` - Get transfer history
+- `POST /api/transfers` - Create new transfer
+- `GET /api/transfers/[id]` - Get transfer details
+- `POST /api/transfers/[id]/cancel` - Cancel pending transfer
+
+### Exchange Rates
+- `GET /api/exchange-rates` - Get current exchange rates
+- `POST /api/exchange-rates/convert` - Convert between currencies
+- `GET /api/exchange-rates/history` - Get historical rates
 
 ## Database Schema
 
 ### profiles
 - User profile information (extends Supabase auth.users)
 
-### wallets
-- Encrypted private keys
-- Wallet addresses
-- USDT and TRX balances
+### accounts
+- Multi-currency accounts (USD, EUR, GBP)
+- Account balances and limits
+- Account status
+
+### cards
+- Virtual debit cards
+- Card details (last 4 digits, expiry, CVV)
+- Card status and limits
+
+### transfers
+- Transfer history
+- Exchange rates used
+- Status tracking
 
 ### transactions
-- Transaction history
-- TX hash, status, confirmations
-- Amounts and timestamps
+- Individual transactions
+- Categories and merchants
+- Transaction metadata
 
-## Testing
+## Security Features
 
-### Test Wallet Creation
-1. Register a new account
-2. Dashboard will show "No wallet found"
-3. Click "Create Wallet" to generate a TRON wallet
-4. Wallet address and QR code will be displayed
+1. **Row Level Security (RLS)**
+   - Users can only access their own data
+   - Service role operations isolated from client access
+   - Database policies enforce data isolation
 
-### Test USDT Transfer
-1. Create two test accounts
-2. Generate wallets for both
-3. Use the send form to transfer USDT
-4. Check transaction history for both accounts
+2. **API Security**
+   - Input validation with Zod schemas
+   - Authentication required for all operations
+   - Protected routes via middleware
 
-### Test Balance Sync
-- Balance automatically syncs from blockchain when fetching
-- Click refresh or navigate away and back to update
+3. **Card Security**
+   - Sensitive card data encrypted
+   - Card details only shown when authenticated
+   - One-time view for full card details
 
 ## Deployment
 
@@ -198,29 +208,18 @@ Open http://localhost:3000
 
 Ensure all environment variables are set in your deployment platform:
 - Supabase URL and keys
-- TRON API key
-- Encryption master key (generate a new one for production)
-
-## Security Checklist
-
-- [ ] RLS policies enabled on all tables
-- [ ] Service role key never exposed to client
-- [ ] Private keys always encrypted
-- [ ] Input validation on all API routes
-- [ ] Authentication required for wallet operations
-- [ ] HTTPS enabled in production
-- [ ] Environment variables secured
+- Exchange rate API key (for live rates)
+- Card issuing API key (for virtual card integration)
 
 ## Tech Stack Details
 
 - **Next.js 16**: App Router, Server Components, API Routes
 - **Supabase**: PostgreSQL database, Authentication, Row Level Security
-- **TRON**: Nile testnet, TRC-20 USDT contract
-- **TronWeb**: TRON blockchain interaction
 - **Tailwind CSS 4**: Styling with CSS variables
 - **shadcn/ui**: Component library
 - **Framer Motion**: Animations
 - **Lucide React**: Icons
+- **Recharts**: Analytics charts
 
 ## License
 

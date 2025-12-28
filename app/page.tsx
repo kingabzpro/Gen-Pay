@@ -33,11 +33,10 @@ export default function Home() {
         <section className="py-20 px-4 bg-gradient-to-b from-secondary to-background">
           <div className="container mx-auto max-w-4xl text-center">
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6 text-foreground">
-              Accept <span className="text-primary">USDT Payments</span> Instantly
+              Multi-Currency <span className="text-primary">Banking</span> Platform
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              The easiest way to accept stablecoin payments with USDT on Tron blockchain. Fast, secure, and built for
-              the future of finance.
+              Manage your finances across multiple currencies with virtual debit cards, international transfers, and real-time exchange rates. Fast, secure, and built for the modern world.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/register">
@@ -65,9 +64,9 @@ export default function Home() {
               <Card className="bg-card border-border hover:border-primary/50 transition-colors">
                 <CardHeader>
                   <Zap className="h-12 w-12 text-primary mb-4" />
-                  <CardTitle className="text-primary">Instant Settlement</CardTitle>
+                  <CardTitle className="text-primary">Multi-Currency Accounts</CardTitle>
                   <CardDescription className="text-muted-foreground">
-                    Receive payments in seconds with USDT on Tron network. No waiting, no delays.
+                    Hold and manage balances in USD, EUR, and GBP with real-time exchange rates.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -75,9 +74,9 @@ export default function Home() {
               <Card className="bg-card border-border hover:border-primary/50 transition-colors">
                 <CardHeader>
                   <Shield className="h-12 w-12 text-primary mb-4" />
-                  <CardTitle className="text-primary">Secure & Reliable</CardTitle>
+                  <CardTitle className="text-primary">Virtual Debit Cards</CardTitle>
                   <CardDescription className="text-muted-foreground">
-                    Built on blockchain technology with enterprise-grade security and transparency.
+                    Generate instant virtual cards for online purchases with spending controls and freeze options.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -85,9 +84,9 @@ export default function Home() {
               <Card className="bg-card border-border hover:border-primary/50 transition-colors">
                 <CardHeader>
                   <Globe className="h-12 w-12 text-primary mb-4" />
-                  <CardTitle className="text-primary">Global Payments</CardTitle>
+                  <CardTitle className="text-primary">International Transfers</CardTitle>
                   <CardDescription className="text-muted-foreground">
-                    Accept payments from anywhere in the world. No geographic restrictions.
+                    Send money globally with competitive exchange rates and transparent fee structure.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -115,7 +114,7 @@ export default function Home() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    Unlimited payment links
+                    Unlimited multi-currency accounts
                   </li>
                   <li className="flex items-center text-foreground">
                     <svg className="h-5 w-5 text-primary mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -125,7 +124,7 @@ export default function Home() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    USDT (TRC20) support
+                    Virtual debit cards
                   </li>
                   <li className="flex items-center text-foreground">
                     <svg className="h-5 w-5 text-primary mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -135,7 +134,7 @@ export default function Home() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    Email notifications
+                    Real-time exchange rates
                   </li>
                   <li className="flex items-center text-foreground">
                     <svg className="h-5 w-5 text-primary mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -145,7 +144,7 @@ export default function Home() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    Webhooks
+                    Instant transfers
                   </li>
                 </ul>
                 <Link href="/register" className="w-full">
@@ -161,7 +160,7 @@ export default function Home() {
 
       <footer className="border-t border-border py-8 px-4 bg-card">
         <div className="container mx-auto text-center text-muted-foreground">
-          <p>&copy; 2025 GEN-PAY. Built with Next.js, Appwrite, and Tron.</p>
+          <p>&copy; 2025 GEN-PAY. Built with Next.js, Supabase, and modern web technologies.</p>
         </div>
       </footer>
     </div>

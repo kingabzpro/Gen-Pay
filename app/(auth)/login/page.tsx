@@ -45,7 +45,7 @@ export default function LoginPage() {
         <Card className="bg-card border-border">
           <CardHeader>
             <CardTitle className="text-foreground">Welcome Back</CardTitle>
-            <CardDescription className="text-muted-foreground">Sign in to your wallet account</CardDescription>
+            <CardDescription className="text-muted-foreground">Sign in to your GEN-PAY account</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">

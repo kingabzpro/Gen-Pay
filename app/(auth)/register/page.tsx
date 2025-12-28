@@ -59,7 +59,7 @@ export default function RegisterPage() {
         <Card className="bg-card border-border">
           <CardHeader>
             <CardTitle className="text-foreground">Create Account</CardTitle>
-            <CardDescription className="text-muted-foreground">Create your TRON wallet account</CardDescription>
+            <CardDescription className="text-muted-foreground">Create your GEN-PAY banking account</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
