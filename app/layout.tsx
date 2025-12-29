@@ -2,17 +2,18 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-
+import { Toaster } from "@/components/ui/toaster";
+ 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
-
+ 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
+ 
 export const metadata: Metadata = {
   title: "GEN-PAY",
   description: "USDT payment processing platform",
@@ -26,11 +27,11 @@ export const metadata: Metadata = {
   },
   manifest: "/site.webmanifest",
 };
-
+ 
 export const viewport = {
   themeColor: "#dc2626",
 };
-
+ 
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -49,6 +50,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

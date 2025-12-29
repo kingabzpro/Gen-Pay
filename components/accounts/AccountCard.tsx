@@ -41,55 +41,55 @@ export function AccountCard({
     GBP: '£',
   };
 
-  const currencyColors: Record<string, string> = {
-    USD: 'from-blue-500 to-blue-600',
-    EUR: 'from-purple-500 to-purple-600',
-    GBP: 'from-red-500 to-red-600',
+  const currencyColors: Record<string, { bg: string; text: string }> = {
+    USD: { bg: 'from-blue-500 to-blue-600', text: 'text-blue-600' },
+    EUR: { bg: 'from-purple-500 to-purple-600', text: 'text-purple-600' },
+    GBP: { bg: 'from-red-500 to-red-600', text: 'text-red-600' },
   };
  
   return (
     <Card 
-      className="relative overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-200 group"
+      className="relative overflow-hidden cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200 group bg-background border border-border"
       onClick={() => {
         if (onSendMoney) onSendMoney();
       }}
     >
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">
-          <div className="flex items-center gap-2">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+        <CardTitle className="text-base font-semibold">
+          <div className="flex items-center gap-2.5">
             <Banknote className="h-4 w-4" />
             <span>{currencyCode} Account</span>
             {isPrimary && (
-              <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+              <Star className="h-3.5 w-3.5 text-foreground fill-foreground" />
             )}
           </div>
         </CardTitle>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             {onReceiveMoney && (
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 hover:bg-muted"
                 onClick={(e) => {
                   e.stopPropagation();
                   onReceiveMoney();
                 }}
               >
-                <ArrowDownLeft className="h-4 w-4 text-green-600" />
+                <ArrowDownLeft className="h-4 w-4" />
               </Button>
             )}
             {onSendMoney && (
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 hover:bg-muted"
                 onClick={(e) => {
                   e.stopPropagation();
                   onSendMoney();
                 }}
               >
-                <ArrowUpRight className="h-4 w-4 text-blue-600" />
+                <ArrowUpRight className="h-4 w-4" />
               </Button>
             )}
           </div>
@@ -97,7 +97,7 @@ export function AccountCard({
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="ghost" 
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 hover:bg-muted"
                 onClick={(e) => e.stopPropagation()}
               >
                 <MoreHorizontal className="h-4 w-4" />
@@ -143,7 +143,7 @@ export function AccountCard({
                     e.stopPropagation();
                     onClose();
                   }}
-                  className="text-red-600"
+                  className="text-destructive"
                 >
                   Close Account
                 </DropdownMenuItem>
@@ -152,37 +152,37 @@ export function AccountCard({
           </DropdownMenu>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className={`bg-gradient-to-r ${currencyColors[currencyCode]} rounded-lg p-4 text-white mb-3`}>
-          <div className="flex justify-between items-start mb-2">
-            <Banknote className="h-6 w-6 opacity-80" />
-            <span className="text-xs font-bold uppercase tracking-wider opacity-80">Balance</span>
+      <CardContent className="space-y-4">
+        <div className={`bg-gradient-to-r ${currencyColors[currencyCode].bg} rounded-xl p-5 text-white shadow-lg`}>
+          <div className="flex justify-between items-start mb-3">
+            <Banknote className="h-6 w-6 opacity-90" />
+            <span className="text-xs font-bold uppercase tracking-wider opacity-90">Balance</span>
           </div>
-          <div className="text-3xl font-bold tracking-tight">
+          <div className="text-4xl font-bold tracking-tight">
             {currencySymbols[currencyCode]}{balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
         </div>
-        <p className="text-xs text-muted-foreground mb-2">
-          Account Number
-        </p>
-        <div className="text-sm font-mono bg-muted/50 rounded px-2 py-1 inline-block">
-          {accountNumber}
+        <div>
+          <p className="text-xs text-muted-foreground font-medium mb-2">Account Number</p>
+          <div className="text-sm font-mono bg-muted/50 dark:bg-muted/30 rounded px-3 py-2 inline-block">
+            {accountNumber}
+          </div>
         </div>
-        <div className="flex items-center justify-between mt-3">
+        <div className="flex items-center justify-between">
           <span
-            className={`text-xs px-2 py-1 rounded-full font-medium ${
+            className={`text-xs px-3 py-1.5 rounded-full font-medium ${
               status === 'active'
-                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                ? 'bg-primary text-primary-foreground'
                 : status === 'frozen'
-                ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-                : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                ? 'bg-yellow-600 text-white'
+                : 'bg-destructive text-destructive-foreground'
             }`}
           >
             {status}
           </span>
           {isPrimary && (
-            <span className="text-xs text-yellow-600 dark:text-yellow-400 font-medium flex items-center gap-1">
-              <Star className="h-3 w-3 fill-yellow-500 dark:fill-yellow-400" />
+            <span className="text-xs font-medium flex items-center gap-1.5 bg-primary/10 text-primary px-2.5 py-1.5 rounded-full">
+              <Star className="h-3 w-3 fill-foreground" />
               Primary
             </span>
           )}
