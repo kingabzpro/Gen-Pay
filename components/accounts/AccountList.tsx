@@ -154,7 +154,7 @@ export function AccountList({
                 <div className="text-right">
                   <p className="text-2xl font-bold">
                     {selectedAccount.currencyCode === 'USD' ? '$' : selectedAccount.currencyCode === 'EUR' ? '€' : '£'}
-                    {selectedAccount.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    {(typeof selectedAccount.balance === 'number' && !isNaN(selectedAccount.balance) ? selectedAccount.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00')}
                   </p>
                 </div>
               </div>

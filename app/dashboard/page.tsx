@@ -201,8 +201,8 @@ export default function DashboardPage() {
                 })) || [];
               } catch (error) {
                 console.error('Failed to fetch cards:', error);
-              return [];
-            }}
+                return [];
+              }
             }}
             createCard={async (data: any) => {
               const response = await fetch('/api/cards', {

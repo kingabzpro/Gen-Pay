@@ -159,7 +159,7 @@ export function AccountCard({
             <span className="text-xs font-bold uppercase tracking-wider opacity-90">Balance</span>
           </div>
           <div className="text-4xl font-bold tracking-tight">
-            {currencySymbols[currencyCode]}{balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {currencySymbols[currencyCode]}{(typeof balance === 'number' && !isNaN(balance) ? balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00')}
           </div>
         </div>
         <div>

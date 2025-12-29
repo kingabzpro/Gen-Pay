@@ -75,6 +75,9 @@ export function TransferList({ fetchTransfers }: TransferListProps) {
   };
 
   const formatDate = (date: Date): string => {
+    if (!(date instanceof Date) || isNaN(date.getTime())) {
+      return 'Invalid Date';
+    }
     return new Intl.DateTimeFormat('en-US', {
       month: 'short',
       day: 'numeric',
