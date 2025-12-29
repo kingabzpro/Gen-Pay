@@ -1,37 +1,50 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/supabase/server-auth';
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+import { getTransactionsByUserId, getTransactionsByAccount, getTransactionsByCard } from '@/lib/services/transactions';
+import { z } from 'zod';
 
-export async function GET(request: NextRequest) {
+const filterSchema = z.object({
+  accountId: z.string().uuid().optional(),
+  cardId: z.string().uuid().optional(),
+  limit: z.number().positive().max(100).optional(),
+});
+
+export async function GET(request: Request) {
   try {
-    const user = await getCurrentUser(request);
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
     if (!user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const supabase = createClient();
+    const { searchParams } = new URL(request.url);
+    const validatedData = filterSchema.parse({
+      accountId: searchParams.get('accountId') || undefined,
+      cardId: searchParams.get('cardId') || undefined,
+      limit: searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined,
+    });
 
-    const { data, error } = await supabase
-      .from('transactions')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(50);
+    let transactions;
 
-    if (error) throw error;
+    if (validatedData.accountId) {
+      transactions = await getTransactionsByAccount(validatedData.accountId);
+    } else if (validatedData.cardId) {
+      transactions = await getTransactionsByCard(validatedData.cardId);
+    } else {
+      transactions = await getTransactionsByUserId(user.id);
+    }
 
-    return NextResponse.json({
-      success: true,
-      transactions: data
+    const filteredTransactions = validatedData.limit 
+      ? transactions.slice(0, validatedData.limit)
+      : transactions;
+
+    return Response.json({
+      transactions: filteredTransactions,
     });
   } catch (error: any) {
-    console.error('Transactions fetch error:', error);
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
-    );
+    if (error.name === 'ZodError') {
+      return Response.json({ error: 'Invalid input', details: error.errors }, { status: 400 });
+    }
+    return Response.json({ error: error.message }, { status: 500 });
   }
 }

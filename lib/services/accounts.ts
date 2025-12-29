@@ -158,3 +158,52 @@ export async function getAccountByCurrency(userId: string, currencyCode: string)
   const accounts = await getAccountsByUserId(userId);
   return accounts.find(a => a.currencyCode === currencyCode) || null;
 }
+
+export async function addFunds(accountId: string, amount: number): Promise<Account> {
+  const account = await getAccountById(accountId);
+  if (!account) {
+    throw new Error('Account not found');
+  }
+
+  if (account.status !== 'active') {
+    throw new Error('Account is not active');
+  }
+
+  if (amount <= 0) {
+    throw new Error('Amount must be positive');
+  }
+
+  const newBalance = account.balance + amount;
+  await updateAccountBalance(accountId, newBalance);
+
+  return { ...account, balance: newBalance };
+}
+
+export async function deductFunds(accountId: string, amount: number): Promise<Account> {
+  const account = await getAccountById(accountId);
+  if (!account) {
+    throw new Error('Account not found');
+  }
+
+  if (account.status !== 'active') {
+    throw new Error('Account is not active');
+  }
+
+  if (amount <= 0) {
+    throw new Error('Amount must be positive');
+  }
+
+  if (account.balance < amount) {
+    throw new Error('Insufficient balance');
+  }
+
+  const newBalance = account.balance - amount;
+  await updateAccountBalance(accountId, newBalance);
+
+  return { ...account, balance: newBalance };
+}
+
+export async function transferFunds(fromAccountId: string, toAccountId: string, amount: number): Promise<void> {
+  await deductFunds(fromAccountId, amount);
+  await addFunds(toAccountId, amount);
+}

@@ -1,5 +1,7 @@
 // Transfers service for international transfers
 import { createClient } from '@/lib/supabase/server';
+import { getAccountById, updateAccountBalance } from './accounts';
+import { createTransaction } from './transactions';
 
 export interface Transfer {
   id: string;
@@ -125,32 +127,21 @@ async function getExchangeRate(fromCurrency: string, toCurrency: string): Promis
   return parseFloat(data.rate);
 }
 
-async function calculateTransferFee(amount: number, transferType: 'internal' | 'external' | 'card_payment'): number {
-  // Simple fee structure:
-  // - Internal: 0.5% (minimum $1)
-  // - External: 1.5% (minimum $5)
-  // - Card payment: 2% (minimum $2)
+async function calculateTransferFee(amount: number, transferType: 'internal' | 'external' | 'card_payment') {
+  const feeRate: { [key: string]: number } = {
+    internal: 0.005,
+    external: 0.015,
+    card_payment: 0.02,
+  };
 
-  let feeRate: number;
-  let minFee: number;
+  const minFee: { [key: string]: number } = {
+    internal: 1,
+    external: 5,
+    card_payment: 2,
+  };
 
-  switch (transferType) {
-    case 'internal':
-      feeRate = 0.005;
-      minFee = 1;
-      break;
-    case 'external':
-      feeRate = 0.015;
-      minFee = 5;
-      break;
-    case 'card_payment':
-      feeRate = 0.02;
-      minFee = 2;
-      break;
-  }
-
-  const calculatedFee = amount * feeRate;
-  return Math.max(calculatedFee, minFee);
+  const calculatedFee = amount * feeRate[transferType];
+  return Math.max(calculatedFee, minFee[transferType]);
 }
 
 export async function createTransfer(userId: string, data: CreateTransferData): Promise<Transfer> {
@@ -163,18 +154,18 @@ export async function createTransfer(userId: string, data: CreateTransferData): 
   let estimatedArrival: Date | undefined;
 
   if (data.fromCurrency !== data.toCurrency) {
-    exchangeRate = await getExchangeRate(data.fromCurrency, data.toCurrency);
-    if (!exchangeRate) {
+    const rate = await getExchangeRate(data.fromCurrency, data.toCurrency);
+    if (!rate) {
       throw new Error(`Exchange rate not available for ${data.fromCurrency} to ${data.toCurrency}`);
     }
+    exchangeRate = rate;
   }
 
-  // Set estimated arrival based on transfer type
   const now = new Date();
   if (data.transferType === 'internal') {
-    estimatedArrival = new Date(now.getTime() + 5 * 60 * 1000); // 5 minutes
+    estimatedArrival = new Date(now.getTime() + 5 * 60 * 1000);
   } else {
-    estimatedArrival = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000); // 3 days
+    estimatedArrival = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
   }
 
   const { data: transfer, error } = await supabase
@@ -225,6 +216,76 @@ export async function createTransfer(userId: string, data: CreateTransferData): 
     createdAt: new Date(transfer.created_at),
     updatedAt: new Date(transfer.updated_at),
   };
+}
+
+export async function completeTransfer(transferId: string): Promise<void> {
+  const transfer = await getTransferById(transferId);
+  if (!transfer) {
+    throw new Error('Transfer not found');
+  }
+
+  const supabase = await createClient();
+
+  const fromAccount = await getAccountById(transfer.fromAccountId);
+  if (!fromAccount) {
+    throw new Error('Source account not found');
+  }
+
+  const totalAmount = transfer.amount + transfer.fee;
+
+  if (fromAccount.balance < totalAmount) {
+    throw new Error('Insufficient balance');
+  }
+
+  const newFromBalance = fromAccount.balance - totalAmount;
+  await updateAccountBalance(transfer.fromAccountId, newFromBalance);
+
+  let merchantName = `Transfer to ${transfer.recipientName || transfer.recipientEmail || 'Unknown'}`;
+  if (transfer.transferType === 'card_payment') {
+    merchantName = 'Card Payment';
+  }
+
+  await createTransaction({
+    userId: transfer.userId,
+    accountId: transfer.fromAccountId,
+    transferId: transfer.id,
+    transactionType: 'transfer_out',
+    amount: totalAmount,
+    currency: transfer.fromCurrency,
+    merchantName,
+    category: 'Transfer',
+    description: transfer.reference || `${transfer.transferType} transfer`,
+    status: 'completed',
+  });
+
+  if (transfer.transferType === 'internal' && transfer.toAccountId) {
+    const toAccount = await getAccountById(transfer.toAccountId);
+    if (!toAccount) {
+      throw new Error('Destination account not found');
+    }
+
+    const convertedAmount = transfer.exchangeRate 
+      ? transfer.amount * transfer.exchangeRate 
+      : transfer.amount;
+
+    const newToBalance = toAccount.balance + convertedAmount;
+    await updateAccountBalance(transfer.toAccountId, newToBalance);
+
+    await createTransaction({
+      userId: toAccount.userId,
+      accountId: transfer.toAccountId,
+      transferId: transfer.id,
+      transactionType: 'transfer_in',
+      amount: convertedAmount,
+      currency: transfer.toCurrency,
+      merchantName: `Transfer from user`,
+      category: 'Transfer',
+      description: transfer.reference || 'Internal transfer received',
+      status: 'completed',
+    });
+  }
+
+  await updateTransferStatus(transferId, 'completed');
 }
 
 export async function cancelTransfer(transferId: string): Promise<void> {

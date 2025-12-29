@@ -8,8 +8,9 @@ const updateCardSchema = z.object({
   monthlyLimit: z.number().positive().optional(),
 });
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -17,7 +18,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const card = await getCardById(params.id);
+    const card = await getCardById(id);
 
     if (!card) {
       return Response.json({ error: 'Card not found' }, { status: 404 });
@@ -38,8 +39,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -47,7 +49,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const card = await getCardById(params.id);
+    const card = await getCardById(id);
 
     if (!card) {
       return Response.json({ error: 'Card not found' }, { status: 404 });
@@ -60,7 +62,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     const body = await request.json();
     const validatedData = updateCardSchema.parse(body);
 
-    const updatedCard = await updateCard(params.id, validatedData);
+    const updatedCard = await updateCard(id, validatedData);
     const maskedCard = {
       ...updatedCard,
       cardNumber: '**** **** **** ' + updatedCard.cardNumber.slice(-4),
@@ -75,8 +77,9 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -84,7 +87,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const card = await getCardById(params.id);
+    const card = await getCardById(id);
 
     if (!card) {
       return Response.json({ error: 'Card not found' }, { status: 404 });
@@ -94,7 +97,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       return Response.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    await deleteCard(params.id);
+    await deleteCard(id);
     return Response.json({ success: true });
   } catch (error: any) {
     return Response.json({ error: error.message }, { status: 500 });

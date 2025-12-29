@@ -43,11 +43,12 @@ npm install
 ### 2. Set Up Supabase
 
 1. Create a new Supabase project at https://supabase.com
-2. Run the SQL migration:
-   ```bash
-   # Copy the contents of supabase/migrations/001_initial_schema.sql
-   # Paste into Supabase SQL Editor and run
-   ```
+2. Run the SQL migrations:
+    ```bash
+    # 1. Run supabase/migrations/001_initial_schema.sql
+    # 2. Run supabase/migrations/002_transaction_helpers.sql
+    # Copy and paste each into Supabase SQL Editor
+    ```
 3. Get your project URL and keys from Supabase Dashboard → Settings → API
 
 ### 3. Configure Environment Variables
@@ -57,8 +58,8 @@ Create `.env.local` file:
 ```bash
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your_publishable_key
+SUPABASE_SECRET_KEY=your_secret_key
 
 # Exchange Rate API (optional - uses free tier)
 NEXT_PUBLIC_EXCHANGE_RATE_API_KEY=your_exchange_rate_api_key
@@ -67,13 +68,35 @@ NEXT_PUBLIC_EXCHANGE_RATE_API_KEY=your_exchange_rate_api_key
 NEXT_PUBLIC_CARD_ISSUING_API_KEY=your_card_issuing_api_key
 ```
 
-### 4. Run Development Server
+**Important:** For the seed script, ensure `SUPABASE_SECRET_KEY` is set to your service role key (not the anon key).
+
+### 4. Seed the Database
+
+```bash
+npm run seed
+```
+
+This will create:
+- 3 test users with hardcoded credentials
+- Multi-currency accounts for each user
+- Virtual cards for each account
+- 60+ dummy transactions
+- Inter-user transfers
+
+See `SEEDING_GUIDE.md` for detailed information about the seed script.
+
+### 5. Run Development Server
 
 ```bash
 npm run dev
 ```
 
 Open http://localhost:3000
+
+Login with one of the test accounts created by the seed script:
+- john@example.com / Test123456!
+- jane@example.com / Test123456!
+- bob@example.com / Test123456!
 
 ## Project Structure
 
