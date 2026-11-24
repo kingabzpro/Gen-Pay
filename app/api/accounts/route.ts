@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     return Response.json({ account }, { status: 201 });
   } catch (error: any) {
     if (error.name === 'ZodError') {
-      return Response.json({ error: 'Invalid input', details: error.errors }, { status: 400 });
+      return Response.json({ error: 'Invalid input', details: error.issues }, { status: 400 });
     }
     return Response.json({ error: error.message }, { status: 500 });
   }
